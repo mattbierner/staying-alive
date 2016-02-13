@@ -1,0 +1,325 @@
+<!-- Bootstrap v3.0.3 -->
+<link href="https://s3.amazonaws.com/mturk-public/bs30/css/bootstrap.min.css" rel="stylesheet" />
+<link href="https://s3.amazonaws.com/static.mattbierner.com/mturk/spectrum.css" rel="stylesheet" />
+<section class="container" id="mturk_form" style="margin-bottom:15px; padding: 10px 10px; font-family: Verdana, Geneva, sans-serif; color:#333333; font-size:0.9em;">
+	<div class="row col-xs-12 col-md-12">
+		<div class="panel panel-primary" id="instructions" style="padding: 10px;">
+			<h1 class="panel-heading">Stay Alive for 5 Minutes</h1>
+
+			<p>This HIT requires that you stay alive for five minutes. That's it.</p>
+			<p>Click the <b>Start</b> button below to begin.</p>
+
+			<h3>Tips and Tricks</h3>
+			<ul>
+				<li>Check your surroundings for potential hazards before beginning.</li>
+				<li>Remember to breathe.</li>
+				<li>At the end of five minutes, a simple question will check if you are still alive or not. There is no penalty for wrong answers.</li>
+				<li>No additional reward is offered for staying alive beyond the five minutes.</li>
+				<li>Try to keep at least 80% of your blood inside of your body.</li>
+				<li>If you are unable to stay alive, remember that your progeny many complete the HIT for you.</li>
+				<li>Try not to contemplate life or the meaning of life. Doing so may interfere with your ability and/or will to stay alive.</li>
+				<li>Have fun!</li>
+			</ul>
+		</div>
+
+		<section id="content-body">
+			<button id="start-button" class="btn btn-lg btn-success">Start</button>
+			<h2 id="timer" class="hidden">00:00</h2>
+			<p id="confirmation-box"></p>
+
+			<form action="https://www.mturk.com/mturk/externalSubmit" id="test" class="hidden" method="post">
+				<input id="assignmentId" name="assignmentId" type="hidden" value="" />
+				<h2 class="congratulations">Congratulations</h2>
+				<p>You survived!</p>
+				<p>Please <b>select the picture of the cat</b> below to complete the HIT.</p>
+				<ul id="test-choices">
+					<li>
+						<img src="http://animalpetdoctor.homestead.com/acat1.jpg" alt="cat" />
+						<button class="btn btn-lg btn-success submitButton goodSubmit">Submit</button>
+					</li>
+					<li>
+						<img src="http://a-z-animals.com/media/animals/images/original/zebra.jpg" alt="not a cat" />
+						<button class="btn btn-lg btn-success submitButton badSubmit">Submit</button>
+					</li>
+					<li>
+						<img src="https://upload.wikimedia.org/wikipedia/commons/0/03/Mountain_Bluebird.jpg" alt="not a cat" />
+						<button class="btn btn-lg btn-success submitButton badSubmit">Submit</button>
+					</li>
+				</ul>
+
+			</form>
+		</section>
+	</div>
+</section>
+
+<style type="text/css">
+	ol li {
+		padding: 10px;
+		border-bottom: 1px solid #eee;
+	}
+
+	.error {
+		color: red;
+		width: 100%;
+	}
+
+	#word-list .word {
+		font-weight: bold;
+		border: none;
+		display: inline-block;
+		min-width: 160px;
+		padding-right: 20px;
+		text-align: left;
+	}
+
+	input[type="checkbox"].no-color {
+		display: inline-block;
+		margin: 0;
+		margin-left: 20px;
+	}
+
+	.hidden {
+		visibility: hidden;
+	}
+
+	#instructions {
+
+	}
+
+	#test {
+		text-align: center;
+	}
+
+	#start-button {
+		display: block;
+		margin: 0 auto;
+	}
+
+	#timer {
+		text-align: center;
+		font-size: 140px;
+
+		animation-duration: 300s;
+		animation-iteration-count: 1;
+	}
+
+	#confirmation-box {
+		text-align: center;
+		font-size: 18px;
+		opacity: 0;
+	}
+
+	.confirmation-box-fade {
+		animation: confirm-animation;
+		animation-duration: 15s;
+		animation-iteration-count: 1;
+	}
+
+	#test-choices img {
+		max-width: 250px;
+	}
+
+	#test-choices li {
+		display: block;
+		background: #ccc;
+		border: 2px solid #aaa;
+		margin: 0.25em;
+	}
+
+	@keyframes timerfade {
+		0% {
+			color: #5cb85c;
+		}
+		60% {
+			color: #5cb85c;
+		}
+		100% {
+			color: #d9534f;
+		}
+	}
+
+	@keyframes confirm-animation {
+		0% {
+			opacity: 0;
+			transform: translateY(-30px);
+		}
+		2% {
+			opacity: 1;
+			transform: translateY(0);
+		}
+		98% {
+			opacity: 1;
+			transform: translateY(0);
+		}
+		100% {
+			opacity: 0;
+			transform: translateY(30px);
+		}
+	}
+</style>
+<script src="https://s3.amazonaws.com/static.mattbierner.com/mturk/jquery-2.1.4.min.js"></script>
+<script src="https://s3.amazonaws.com/mturk-public/externalHIT_v1.js"></script>
+<script src="http://uniqueturker.myleott.com/lib.js"></script>
+<script language='Javascript'>
+	turkSetAssignmentID();
+</script>
+<script type="text/javascript">
+	(function() {
+		var ut_id = "f649f109c5175152d2d9767a67deb4dc";
+		if (UTWorkerLimitReached(ut_id)) {
+			document.getElementById('mturk_form').style.display = 'none';
+			document.getElementsByTagName('body')[0].innerHTML = "Sorry but you have already survived once, please give someone else a chance. Be sure to click 'Return HIT' to avoid any impact on your approval rating.";
+		}
+	})();
+</script>
+
+<script>
+	// Config
+	// Length of timed session
+	var duration = 1000 * 60 * 5; // five minutes
+
+	var server = 'http://localhost:3000/';
+
+
+	// booooo! global state :(
+	var isRunning = false;
+	var isDone = false;
+	var start;
+	var end;
+	var timer;
+	var confirmer;
+
+	var confirmations = [
+		// confirmations
+		"Good job!",
+		"Way to go!",
+		"You're the best!",
+		"Amazing!",
+		"Incredible!",
+		"Astounding!",
+		"No one survives like you do!",
+		"Wow!",
+		"Go for the gold!",
+		"Keep it up!",
+		"I love you!",
+		"Everyone is counting on you!",
+		"You showed them!",
+		"You're my hero!",
+		"Think of the children!",
+		"You make it look easy!",
+
+		// advice
+		"Remember to breathe!",
+		"Watch our for tigers!",
+		"Don't die!",
+		"Focus!",
+		"Drink plenty of water!",
+
+		// Other
+		"It's alright!",
+		"It's Ok!",
+		"You're stayin' alive, stayin' alive!",
+		"Ah, ha, ha, ha, stayin' alive, stayin' alive!",
+		"Live to see another day!",
+		"This was a triumph!",
+		"I'm making a note here: HUGE SUCCESS!",
+		"For the good of all of us!",
+		"Still alive!",
+		"Your winner!"];
+
+	var log = function(event) {
+		$.ajax({
+			type: 'POST',
+			url: server,
+			contentType: "application/json; charset=utf-8",
+			data: JSON.stringify({ event: event, id: assignmentID, time : Date.now() })
+		});
+	};
+
+	/**
+		Shuffle dom elements.
+	*/
+	var shuffleDom = function(parent) {
+	    var divs = parent.children();
+	    while (divs.length)
+	        parent.append(divs.splice(Math.floor(Math.random() * divs.length), 1)[0]);
+	};
+
+	var remainingTime = function() {
+		var t = end - new Date()
+		return {
+			total: t,
+			done: t < 0,
+			minutes: Math.floor((t / 1000 / 60) % 60),
+			seconds: Math.floor((t / 1000) % 60)
+		};
+	}
+
+	var updateTimer = function(remaining) {
+		var sec = ('0' + (remaining.done ? 0 : remaining.seconds)).slice(-2);
+		var min = ('0' + (remaining.done ? 0 : remaining.minutes)).slice(-2);
+		$('#timer').text(min + ':' + sec);
+	};
+
+	var updateTime = function() {
+		var remaining = remainingTime();
+		if (remaining.done) {
+			onDone();
+		} else {
+			updateTimer(remaining);
+		}
+	};
+
+	var start = function() {
+		if (isRunning || isDone) return;
+		log('start');
+
+		$('#start-button').addClass('hidden');
+		$('#test').addClass('hidden');
+		start = new Date();
+		end = new Date(start.getTime() + duration);
+		$('#timer').removeClass('hidden').css({ '-webkit-animation-name': 'timerfade', 'animation-name': 'timerfade' });
+		timer = setInterval(updateTime, 1000);
+		confirmer = setInterval(confirm, duration / 10.5);
+		updateTime();
+	};
+
+	var confirm = function() {
+		if (isRunning || isDone) return;
+		var text = confirmations.splice(Math.floor(Math.random() * confirmations.length), 1)[0];
+		$('#confirmation-box').text(text);
+
+		var element = document.getElementById("confirmation-box");
+		element.classList.remove("confirmation-box-fade");
+		element.offsetWidth = element.offsetWidth;
+		element.classList.add("confirmation-box-fade");
+	};
+
+	var onDone = function() {
+		clearInterval(updateTime);
+		clearInterval(confirmer);
+		log('end');
+		isDone = true;
+		isRunning = false;
+		$('#confirmation-box').addClass('hidden');
+		$('#test').removeClass('hidden');
+	};
+
+	$(function(){
+		shuffleDom($('#test-choices'));
+
+		$('#start-button').click(function(e) {
+			start();
+		});
+
+		$(".goodSubmit").click(function(e) {
+			log('submit-good');
+			$('#test').submit();
+		});
+
+		$(".badSubmit").click(function(e) {
+			log('submit-bad');
+			$('#test').submit();
+		});
+	});
+</script>
