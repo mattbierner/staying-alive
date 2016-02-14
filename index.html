@@ -157,47 +157,15 @@
 </style>
 <script src="https://s3.amazonaws.com/static.mattbierner.com/mturk/jquery-2.1.4.min.js"></script>
 <script src="https://s3.amazonaws.com/mturk-public/externalHIT_v1.js"></script>
-<script src="http://uniqueturker.myleott.com/lib.js"></script>
+
 <script language='Javascript'>
 	turkSetAssignmentID();
 </script>
 
 <script>
-	// http://stackoverflow.com/questions/15589764/how-to-hide-the-link-to-an-external-web-page-in-a-hit-before-workers-accept-the
-	$.extend({
-		getUrlVars: function() {
-			// From http://code.google.com/p/js-uri/source/browse/trunk/lib/URI.js
-			var parser = /^(?:([^:\/?\#]+):)?(?:\/\/([^\/?\#]*))?([^?\#]*)(?:\?([^\#]*))?(?:\#(.*))?/;
-			var result = window.location.href.match(parser);
-			var scheme = result[1] || null;
-			var authority = result[2] || null;
-			var path = result[3] || null;
-			var query = result[4] || null;
-			var fragment = result[5] || null;
-
-			if (query === null || query === undefined) {
-				return {};
-			}
-			var vars = [],
-				hash;
-			var hashes = query.split('&');
-			for (var i = 0; i < hashes.length; i++) {
-				hash = hashes[i].split('=');
-				vars.push(hash[0]);
-				vars[hash[0]] = hash[1];
-			}
-			return vars;
-		},
-		getUrlVar: function(name) {
-			return $.getUrlVars()[name];
-		}
-	});
-</script>
-
-<script>
 	// Config
 	// Length of timed session
-	var duration = 1000 * 60 * 0.1; // five minutes
+	var duration = 1000 * 60 * 5; // five minutes
 
 	var server = 'http://art-dot-git.cloudapp.net/staying-alive';
 
@@ -210,9 +178,8 @@
 	var confirmer;
 	var checkInTimer;
 
-	var assignmentId = $.getUrlVar('assignmentId');
-	var workerId = $.getUrlVar('workerId');
-	var hitId = $.getUrlVar('hitId');
+	var assignmentId = turkGetParam('assignmentId', 'ASSIGNMENT_ID_NOT_AVAILABLE');
+	var workerId = turkGetParam('workerId');
 
 	var confirmations = [
 		// confirmations
@@ -349,7 +316,6 @@
 
 	$(function() {
 		shuffleDom($('#test-choices'));
-
 		if (assignmentId !== "ASSIGNMENT_ID_NOT_AVAILABLE") {
 			$.ajax({
 				type: 'GET',
