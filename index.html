@@ -1,13 +1,14 @@
 <!-- Bootstrap v3.0.3 -->
 <link href="https://s3.amazonaws.com/mturk-public/bs30/css/bootstrap.min.css" rel="stylesheet" />
 <link href="https://s3.amazonaws.com/static.mattbierner.com/mturk/spectrum.css" rel="stylesheet" />
+
 <section class="container" id="mturk_form" style="margin-bottom:15px; padding: 10px 10px; font-family: Verdana, Geneva, sans-serif; color:#333333; font-size:0.9em;">
 	<div class="row col-xs-12 col-md-12">
 		<div class="panel panel-primary" id="instructions" style="padding: 10px;">
 			<h1 class="panel-heading">Stay Alive for 5 Minutes</h1>
 
-			<p>This HIT requires that you stay alive for five minutes. That's it.</p>
-			<p>Click the <b>Start</b> button below to begin.</p>
+			<p>This HIT requires that you stay alive for five minutes. That's it!</p>
+			<p>Accept the hit to get started.</p>
 
 			<h3>Tips and Tricks</h3>
 			<ul>
@@ -23,7 +24,7 @@
 		</div>
 
 		<section id="content-body">
-			<button id="start-button" class="btn btn-lg btn-success">Start</button>
+			<button id="start-button" class="hidden btn btn-lg btn-success">Start</button>
 			<h2 id="timer" class="hidden">00:00</h2>
 			<p id="confirmation-box"></p>
 
@@ -163,14 +164,37 @@
 <script language='Javascript'>
 	turkSetAssignmentID();
 </script>
-<script type="text/javascript">
-	(function() {
-		var ut_id = "f649f109c5175152d2d9767a67deb4dc";
-		if (UTWorkerLimitReached(ut_id)) {
-			document.getElementById('mturk_form').style.display = 'none';
-			document.getElementsByTagName('body')[0].innerHTML = "Sorry but you have already survived once, please give someone else a chance. Be sure to click 'Return HIT' to avoid any impact on your approval rating.";
-		}
-	})();
+
+<script>
+// http://stackoverflow.com/questions/15589764/how-to-hide-the-link-to-an-external-web-page-in-a-hit-before-workers-accept-the
+$.extend({
+  getUrlVars: function(){
+    // From http://code.google.com/p/js-uri/source/browse/trunk/lib/URI.js
+    var parser = /^(?:([^:\/?\#]+):)?(?:\/\/([^\/?\#]*))?([^?\#]*)(?:\?([^\#]*))?(?:\#(.*))?/;
+    var result = window.location.href.match(parser);
+    var scheme    = result[1] || null;
+    var authority = result[2] || null;
+    var path      = result[3] || null;
+    var query     = result[4] || null;
+    var fragment  = result[5] || null;
+
+    if (query === null || query === undefined) {
+      return {};
+    }
+    var vars = [], hash;
+    var hashes = query.split('&');
+    for(var i = 0; i < hashes.length; i++)
+    {
+      hash = hashes[i].split('=');
+      vars.push(hash[0]);
+      vars[hash[0]] = hash[1];
+    }
+    return vars;
+  },
+  getUrlVar: function(name){
+    return $.getUrlVars()[name];
+  }
+});
 </script>
 
 <script>
@@ -178,8 +202,7 @@
 	// Length of timed session
 	var duration = 1000 * 60 * 5; // five minutes
 
-	var server = 'http://localhost:3000/';
-
+	var server = 'http://art-dot-git.cloudapp.net/staying-alive';
 
 	// booooo! global state :(
 	var isRunning = false;
@@ -188,6 +211,17 @@
 	var end;
 	var timer;
 	var confirmer;
+	var checkInTimer;
+
+	var assignmentId = $.getUrlVar('assignmentId');
+	var workerId = $.getUrlVar('workerId');
+	var hitId = $.getUrlVar('hitId');
+	if (assignmentId == "ASSIGNMENT_ID_NOT_AVAILABLE"){
+	  // Worker is previewing the HIT
+	}
+	else {
+	  // Worker has accepted the HIT
+	}
 
 	var confirmations = [
 		// confirmations
@@ -227,13 +261,13 @@
 		"Still alive!",
 		"Your winner!"];
 
-	var log = function(event) {
+	var log = function(event, f) {
 		$.ajax({
 			type: 'POST',
 			url: server,
 			contentType: "application/json; charset=utf-8",
-			data: JSON.stringify({ event: event, id: assignmentID, time : Date.now() })
-		});
+			data: JSON.stringify({ event: event, worker: workerId, assignment: assignmentId, time : Date.now() })
+		}).done(f);
 	};
 
 	/**
@@ -281,6 +315,7 @@
 		$('#timer').removeClass('hidden').css({ '-webkit-animation-name': 'timerfade', 'animation-name': 'timerfade' });
 		timer = setInterval(updateTime, 1000);
 		confirmer = setInterval(confirm, duration / 10.5);
+		checkInTimer = setInterval(checkIn, 1000 * 10);
 		updateTime();
 	};
 
@@ -296,8 +331,10 @@
 	};
 
 	var onDone = function() {
-		clearInterval(updateTime);
+		if (isRunning || isDone) return;
+		clearInterval(timer);
 		clearInterval(confirmer);
+		clearInterval(checkInTimer);
 		log('end');
 		isDone = true;
 		isRunning = false;
@@ -305,21 +342,27 @@
 		$('#test').removeClass('hidden');
 	};
 
+	var checkIn = function() {
+		if (isRunning || isDone) return;
+		log('check');
+	};
+
 	$(function(){
 		shuffleDom($('#test-choices'));
 
-		$('#start-button').click(function(e) {
+		if (assignmentId !== "ASSIGNMENT_ID_NOT_AVAILABLE")
 			start();
-		});
 
 		$(".goodSubmit").click(function(e) {
-			log('submit-good');
-			$('#test').submit();
+			log('submit-good', function() {
+				$('#test').submit();
+			});
 		});
 
 		$(".badSubmit").click(function(e) {
-			log('submit-bad');
-			$('#test').submit();
+			log('submit-bad', function() {
+				$('#test').submit();
+			});
 		});
 	});
 </script>

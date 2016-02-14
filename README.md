@@ -8,9 +8,6 @@ HIT served to workers. Contains a simple timer that counts down the five minutes
 
 At the end of five minutes, workers are presented a simple test to make sure they are still alive.
 
-Make sure to register you HIT with [Unique Turker](https://uniqueturker.myleott.com) and update the id found in `index.html`.
-
-
 ### `server.js`
 Simple Node.js express server used for collecting telemetry.
 
