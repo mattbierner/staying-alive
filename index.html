@@ -1,6 +1,4 @@
-<!-- Bootstrap v3.0.3 -->
 <link href="https://s3.amazonaws.com/mturk-public/bs30/css/bootstrap.min.css" rel="stylesheet" />
-<link href="https://s3.amazonaws.com/static.mattbierner.com/mturk/spectrum.css" rel="stylesheet" />
 
 <section class="container" style="margin-bottom:15px; padding: 10px 10px; font-family: Verdana, Geneva, sans-serif; color:#333333; font-size:0.9em;">
 	<div class="row col-xs-12 col-md-12">
@@ -49,7 +47,6 @@
 						<button class="btn btn-lg btn-success submitButton badSubmit">Submit</button>
 					</li>
 				</ul>
-
 			</form>
 		</section>
 	</div>
@@ -231,7 +228,7 @@
 				assignment: assignmentId,
 				time: Date.now()
 			})
-		}).done(f);
+		}).done(f || function() { });
 	};
 
 	/**
@@ -312,7 +309,7 @@
 
 	var checkIn = function() {
 		if (isRunning || isDone) return;
-		log('check');
+		log('pulse');
 	};
 
 	$(function() {
