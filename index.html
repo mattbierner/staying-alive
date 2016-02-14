@@ -30,8 +30,10 @@
 
 			<form action="https://www.mturk.com/mturk/externalSubmit" id="mturk_form" class="hidden" method="post">
 				<input id="assignmentId" name="assignmentId" type="hidden" value="" />
+				<input id="foo" name="foo" type="hidden" value="bar" />
+
 				<h2 class="congratulations">Congratulations</h2>
-				<p>You survived!</p>
+				<h4>You survived!</h4>
 				<p>Please <b>select the picture of the cat</b> below to complete the HIT.</p>
 				<ul id="test-choices">
 					<li>
@@ -200,7 +202,7 @@
 
 		// advice
 		"Remember to breathe!",
-		"Watch our for tigers!",
+		"Watch out for tigers!",
 		"Don't die!",
 		"Focus!",
 		"Drink plenty of water!",
@@ -259,6 +261,7 @@
 
 	var updateTime = function() {
 		var remaining = remainingTime();
+		$('#foo').val(remaining.total);
 		if (remaining.done) {
 			onDone();
 		} else {
@@ -325,11 +328,11 @@
 		};
 
 		$(".goodSubmit").click(function(e) {
-			submit('submit-good');
+			submit('submitGood');
 		});
 
 		$(".badSubmit").click(function(e) {
-			submit('submit-bad');
+			submit('submitBad');
 		});
 	});
 </script>
