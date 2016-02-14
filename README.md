@@ -12,11 +12,11 @@ At the end of five minutes, workers are presented a simple test to make sure the
 
 
 ### `server.js`
-Simple Node.js express server used for collecting telemetry. Also used to make sure workers only complete the hit once at most.
+Simple Node.js express server used for collecting telemetry. Can also be used to make sure workers only complete the assignment once at most.
 
 ```bash
 $ npm install
 $ node server.js
 ```
 
-Writes pseudo-json to `log.txt`. Make sure to update `server` in `index.html` to point to your server.
+Writes pseudo-json to `log.txt`. Make sure to update `server` in `index.html` to point to your server. It must be run over https.

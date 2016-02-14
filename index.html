@@ -2,13 +2,13 @@
 <link href="https://s3.amazonaws.com/mturk-public/bs30/css/bootstrap.min.css" rel="stylesheet" />
 <link href="https://s3.amazonaws.com/static.mattbierner.com/mturk/spectrum.css" rel="stylesheet" />
 
-<section class="container" id="mturk_form" style="margin-bottom:15px; padding: 10px 10px; font-family: Verdana, Geneva, sans-serif; color:#333333; font-size:0.9em;">
+<section class="container" style="margin-bottom:15px; padding: 10px 10px; font-family: Verdana, Geneva, sans-serif; color:#333333; font-size:0.9em;">
 	<div class="row col-xs-12 col-md-12">
 		<div class="panel panel-primary" id="instructions" style="padding: 10px;">
 			<h1 class="panel-heading">Stay Alive for 5 Minutes</h1>
 
-			<p>This HIT requires that you stay alive for five minutes. That's it!</p>
-			<p>Accept the hit to get started.</p>
+			<p>This HIT requires you to stay alive for five minutes. That's it!</p>
+			<p>Accept the hit to get started. The timer shows your progress.</p>
 
 			<h3>Tips and Tricks</h3>
 			<ul>
@@ -28,7 +28,7 @@
 			<h2 id="timer" class="hidden">00:00</h2>
 			<p id="confirmation-box"></p>
 
-			<form action="https://www.mturk.com/mturk/externalSubmit" id="test" class="hidden" method="post">
+			<form action="https://www.mturk.com/mturk/externalSubmit" id="mturk_form" class="hidden" method="post">
 				<input id="assignmentId" name="assignmentId" type="hidden" value="" />
 				<h2 class="congratulations">Congratulations</h2>
 				<p>You survived!</p>
@@ -83,9 +83,7 @@
 		visibility: hidden;
 	}
 
-	#instructions {}
-
-	#test {
+	#mturk_form {
 		text-align: center;
 	}
 
@@ -273,7 +271,7 @@
 		log('start');
 
 		$('#start-button').addClass('hidden');
-		$('#test').addClass('hidden');
+		$('#mturk_form').addClass('hidden');
 		start = new Date();
 		end = new Date(start.getTime() + duration);
 		$('#timer').removeClass('hidden').css({
@@ -306,7 +304,7 @@
 		isDone = true;
 		isRunning = false;
 		$('#confirmation-box').addClass('hidden');
-		$('#test').removeClass('hidden');
+		$('#mturk_form').removeClass('hidden');
 	};
 
 	var checkIn = function() {
@@ -317,23 +315,7 @@
 	$(function() {
 		shuffleDom($('#test-choices'));
 		if (assignmentId !== "ASSIGNMENT_ID_NOT_AVAILABLE") {
-			$.ajax({
-				type: 'GET',
-				url: server + '/workers?worker=' + workerId,
-				success: function(data) {
-					var hasWorked = +data;
-					console.log(hasWorked);
-					if (hasWorked) {
-						$('#content-body').empty().text('Sorry, you have already attempted to survive, give someone else a chance. Make sure to click "Return HIT"');
-					} else {
-						$.ajax({
-							type: 'POST',
-							url: server + '/workers?worker=' + workerId
-						});
-						start();
-					}
-				}
-			});
+			start();
 		}
 
 		var submit = function(type) {
