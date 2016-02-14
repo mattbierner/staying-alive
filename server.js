@@ -15,7 +15,7 @@ const workers = {}
 const app = express();
 app.use(require('body-parser').json());
 
-app.post('/', (req, res) => {
+app.post('/data', (req, res) => {
     const q = req.body;
     if (q && q.event) {
         const data = {

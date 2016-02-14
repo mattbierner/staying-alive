@@ -256,7 +256,7 @@
 	var log = function(event, f) {
 		$.ajax({
 			type: 'POST',
-			url: server,
+			url: server + '/data',
 			contentType: "application/json; charset=utf-8",
 			data: JSON.stringify({
 				event: event,
@@ -343,7 +343,7 @@
 
 		$.ajax({
 			type: 'POST',
-			url: server + '/workers?' + workerId
+			url: server + '/workers?worker=' + workerId
 		});
 	};
 
@@ -358,7 +358,7 @@
 		if (assignmentId !== "ASSIGNMENT_ID_NOT_AVAILABLE") {
 			$.ajax({
 				type: 'GET',
-				url: server + '/workers?' + workerId,
+				url: server + '/workers?worker=' + workerId,
 				success: function(data) {
 					var hasWorked = +data;
 					console.log(hasWorked);
