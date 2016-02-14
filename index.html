@@ -83,9 +83,7 @@
 		visibility: hidden;
 	}
 
-	#instructions {
-
-	}
+	#instructions {}
 
 	#test {
 		text-align: center;
@@ -99,7 +97,6 @@
 	#timer {
 		text-align: center;
 		font-size: 140px;
-
 		animation-duration: 300s;
 		animation-iteration-count: 1;
 	}
@@ -166,35 +163,35 @@
 </script>
 
 <script>
-// http://stackoverflow.com/questions/15589764/how-to-hide-the-link-to-an-external-web-page-in-a-hit-before-workers-accept-the
-$.extend({
-  getUrlVars: function(){
-    // From http://code.google.com/p/js-uri/source/browse/trunk/lib/URI.js
-    var parser = /^(?:([^:\/?\#]+):)?(?:\/\/([^\/?\#]*))?([^?\#]*)(?:\?([^\#]*))?(?:\#(.*))?/;
-    var result = window.location.href.match(parser);
-    var scheme    = result[1] || null;
-    var authority = result[2] || null;
-    var path      = result[3] || null;
-    var query     = result[4] || null;
-    var fragment  = result[5] || null;
+	// http://stackoverflow.com/questions/15589764/how-to-hide-the-link-to-an-external-web-page-in-a-hit-before-workers-accept-the
+	$.extend({
+		getUrlVars: function() {
+			// From http://code.google.com/p/js-uri/source/browse/trunk/lib/URI.js
+			var parser = /^(?:([^:\/?\#]+):)?(?:\/\/([^\/?\#]*))?([^?\#]*)(?:\?([^\#]*))?(?:\#(.*))?/;
+			var result = window.location.href.match(parser);
+			var scheme = result[1] || null;
+			var authority = result[2] || null;
+			var path = result[3] || null;
+			var query = result[4] || null;
+			var fragment = result[5] || null;
 
-    if (query === null || query === undefined) {
-      return {};
-    }
-    var vars = [], hash;
-    var hashes = query.split('&');
-    for(var i = 0; i < hashes.length; i++)
-    {
-      hash = hashes[i].split('=');
-      vars.push(hash[0]);
-      vars[hash[0]] = hash[1];
-    }
-    return vars;
-  },
-  getUrlVar: function(name){
-    return $.getUrlVars()[name];
-  }
-});
+			if (query === null || query === undefined) {
+				return {};
+			}
+			var vars = [],
+				hash;
+			var hashes = query.split('&');
+			for (var i = 0; i < hashes.length; i++) {
+				hash = hashes[i].split('=');
+				vars.push(hash[0]);
+				vars[hash[0]] = hash[1];
+			}
+			return vars;
+		},
+		getUrlVar: function(name) {
+			return $.getUrlVars()[name];
+		}
+	});
 </script>
 
 <script>
@@ -253,14 +250,20 @@ $.extend({
 		"I'm making a note here: HUGE SUCCESS!",
 		"For the good of all of us!",
 		"Still alive!",
-		"Your winner!"];
+		"Your winner!"
+	];
 
 	var log = function(event, f) {
 		$.ajax({
 			type: 'POST',
 			url: server,
 			contentType: "application/json; charset=utf-8",
-			data: JSON.stringify({ event: event, worker: workerId, assignment: assignmentId, time : Date.now() })
+			data: JSON.stringify({
+				event: event,
+				worker: workerId,
+				assignment: assignmentId,
+				time: Date.now()
+			})
 		}).done(f);
 	};
 
@@ -268,9 +271,9 @@ $.extend({
 		Shuffle dom elements.
 	*/
 	var shuffleDom = function(parent) {
-	    var divs = parent.children();
-	    while (divs.length)
-	        parent.append(divs.splice(Math.floor(Math.random() * divs.length), 1)[0]);
+		var divs = parent.children();
+		while (divs.length)
+			parent.append(divs.splice(Math.floor(Math.random() * divs.length), 1)[0]);
 	};
 
 	var remainingTime = function() {
@@ -306,7 +309,10 @@ $.extend({
 		$('#test').addClass('hidden');
 		start = new Date();
 		end = new Date(start.getTime() + duration);
-		$('#timer').removeClass('hidden').css({ '-webkit-animation-name': 'timerfade', 'animation-name': 'timerfade' });
+		$('#timer').removeClass('hidden').css({
+			'-webkit-animation-name': 'timerfade',
+			'animation-name': 'timerfade'
+		});
 		timer = setInterval(updateTime, 1000);
 		confirmer = setInterval(confirm, duration / 10.5);
 		checkInTimer = setInterval(checkIn, 1000 * 10);
@@ -334,6 +340,11 @@ $.extend({
 		isRunning = false;
 		$('#confirmation-box').addClass('hidden');
 		$('#test').removeClass('hidden');
+
+		$.ajax({
+			type: 'POST',
+			url: server + '/workers?' + workerId
+		});
 	};
 
 	var checkIn = function() {
@@ -341,17 +352,23 @@ $.extend({
 		log('check');
 	};
 
-	$(function(){
+	$(function() {
 		shuffleDom($('#test-choices'));
 
 		if (assignmentId !== "ASSIGNMENT_ID_NOT_AVAILABLE") {
 			$.ajax({
 				type: 'GET',
 				url: server + '/workers?' + workerId,
-				contentType: "application/json; charset=utf-8",
-				data: JSON.stringify({ event: event, worker: workerId, assignment: assignmentId, time : Date.now() })
-			}).done(f);
-			start();
+				success: function(data) {
+					var hasWorked = +data;
+					console.log(hasWorked);
+					if (hasWorked) {
+						$('#content-body').empty().text('Sorry, you have already survived. Give someone else a chance.')
+					} else {
+						start();
+					}
+				}
+			});
 		}
 
 		$(".goodSubmit").click(function(e) {

@@ -34,22 +34,21 @@ app.post('/', (req, res) => {
 
 app.get('/workers', (req, res) => {
     const q = req.query;
-    console.log(q);
-    if (q) {
-        if (workers[q]) {
+    if (q && q.worker) {
+        if (workers[q.worker]) {
             res.send('1');
         } else {
             res.send('0');
         }
+    } else {
+        res.send('');
     }
-    res.send('');
 });
 
 app.post('/workers', (req, res) => {
     const q = req.query;
-    console.log(q);
-    if (q) {
-        workers[q] = true;
+    if (q && q.worker) {
+        workers[q.worker] = true;
     }
     res.send('');
 
