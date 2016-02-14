@@ -26,7 +26,7 @@ app.post('/data', (req, res) => {
         const data = {
             event: q.event || '',
             worker: q.worker || '',
-            assignmentId: q.assignmentId || '',
+            assignmentId: q.assignment || '',
             remote_time: q.time || 0,
             local_time: Date.now()
         };
