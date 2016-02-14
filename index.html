@@ -197,7 +197,7 @@
 <script>
 	// Config
 	// Length of timed session
-	var duration = 1000 * 60 * 5; // five minutes
+	var duration = 1000 * 60 * 0.1; // five minutes
 
 	var server = 'http://art-dot-git.cloudapp.net/staying-alive';
 
@@ -340,11 +340,6 @@
 		isRunning = false;
 		$('#confirmation-box').addClass('hidden');
 		$('#test').removeClass('hidden');
-
-		$.ajax({
-			type: 'POST',
-			url: server + '/workers?worker=' + workerId
-		});
 	};
 
 	var checkIn = function() {
@@ -363,24 +358,30 @@
 					var hasWorked = +data;
 					console.log(hasWorked);
 					if (hasWorked) {
-						$('#content-body').empty().text('Sorry, you have already survived. Give someone else a chance.')
+						$('#content-body').empty().text('Sorry, you have already attempted to survive, give someone else a chance. Make sure to click "Return HIT"');
 					} else {
+						$.ajax({
+							type: 'POST',
+							url: server + '/workers?worker=' + workerId
+						});
 						start();
 					}
 				}
 			});
 		}
 
-		$(".goodSubmit").click(function(e) {
-			log('submit-good', function() {
+		var submit = function(type) {
+			log(type, function() {
 				$('#test').submit();
 			});
+		};
+
+		$(".goodSubmit").click(function(e) {
+			submit('submit-good');
 		});
 
 		$(".badSubmit").click(function(e) {
-			log('submit-bad', function() {
-				$('#test').submit();
-			});
+			submit('submit-bad');
 		});
 	});
 </script>
