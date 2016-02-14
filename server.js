@@ -37,13 +37,22 @@ app.get('/workers', (req, res) => {
     console.log(q);
     if (q) {
         if (workers[q]) {
-            res.status(400).end('You already joined');
+            res.send('1');
         } else {
-            workers[q] = true;
-            res.send('');
+            res.send('0');
         }
     }
     res.send('');
+});
+
+app.post('/workers', (req, res) => {
+    const q = req.query;
+    console.log(q);
+    if (q) {
+        workers[q] = true;
+    }
+    res.send('');
+
 });
 
 app.listen(3010, () => {

@@ -216,12 +216,6 @@ $.extend({
 	var assignmentId = $.getUrlVar('assignmentId');
 	var workerId = $.getUrlVar('workerId');
 	var hitId = $.getUrlVar('hitId');
-	if (assignmentId == "ASSIGNMENT_ID_NOT_AVAILABLE"){
-	  // Worker is previewing the HIT
-	}
-	else {
-	  // Worker has accepted the HIT
-	}
 
 	var confirmations = [
 		// confirmations
@@ -350,8 +344,15 @@ $.extend({
 	$(function(){
 		shuffleDom($('#test-choices'));
 
-		if (assignmentId !== "ASSIGNMENT_ID_NOT_AVAILABLE")
+		if (assignmentId !== "ASSIGNMENT_ID_NOT_AVAILABLE") {
+			$.ajax({
+				type: 'GET',
+				url: server + '/workers?' + workerId,
+				contentType: "application/json; charset=utf-8",
+				data: JSON.stringify({ event: event, worker: workerId, assignment: assignmentId, time : Date.now() })
+			}).done(f);
 			start();
+		}
 
 		$(".goodSubmit").click(function(e) {
 			log('submit-good', function() {
