@@ -36,15 +36,15 @@
 				<ul id="test-choices">
 					<li>
 						<img src="http://animalpetdoctor.homestead.com/acat1.jpg" alt="cat" />
-						<button class="btn btn-lg btn-success submitButton goodSubmit">Submit</button>
+						<button class="btn btn-lg btn-success goodSubmit">Submit</button>
 					</li>
 					<li>
 						<img src="http://a-z-animals.com/media/animals/images/original/zebra.jpg" alt="not a cat" />
-						<button class="btn btn-lg btn-success submitButton badSubmit">Submit</button>
+						<button class="btn btn-lg btn-success badSubmit">Submit</button>
 					</li>
 					<li>
 						<img src="https://upload.wikimedia.org/wikipedia/commons/0/03/Mountain_Bluebird.jpg" alt="not a cat" />
-						<button class="btn btn-lg btn-success submitButton badSubmit">Submit</button>
+						<button class="btn btn-lg btn-success badSubmit">Submit</button>
 					</li>
 				</ul>
 			</form>
@@ -319,16 +319,21 @@
 		}
 
 		var submit = function(type) {
+			$('#mturk_form').addClass('hidden');
+			$('#content-body').text("Loading...");
+			
 			log(type, function() {
-				$('#test').submit();
+				$('#mturk_form').submit();
 			});
 		};
 
 		$(".goodSubmit").click(function(e) {
+			e.preventDefault();
 			submit('submitGood');
 		});
 
 		$(".badSubmit").click(function(e) {
+			e.preventDefault();
 			submit('submitBad');
 		});
 	});
